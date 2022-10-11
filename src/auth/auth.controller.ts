@@ -30,8 +30,9 @@ export class AuthController {
 
     //POST/auth/signin
     @Post('signin')
-    signin() {
+    signin(
+        @Body() dto: AuthDto) {
         //chiamiamo la funzione dal servizio
-        return this.authService.signin()
+        return this.authService.signin(dto)
     }
 }
