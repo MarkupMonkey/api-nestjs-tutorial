@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, ParseIntPipe, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthDto } from "./dto";// tutti i dettagli di questa cartella
 
@@ -11,7 +11,7 @@ export class AuthController {
     // signup(@Req() req: Request) {// @Req viene da ExpressJS
     signup(// utilizzando questo decoratore (@Body()) Express otterrà il corpo giusto senza preoccuparci del framework che utilizziamo
         //     @Body('email') email: string,
-        //     @Body('password') password: string
+        //     @Body('password', ParseIntPipe) password: string
         // ) {
         //     console.log({
         //         email,
@@ -21,7 +21,10 @@ export class AuthController {
         //     }) // anzichè fare una pipe per ogni campo di dati possiamo farne una per la forma DTO e applicare li le trasformazioni
         //semplifichiamo l'error handling con librerie 
         // di trasformatori di classe e validatori di classe
+
+
         @Body() dto: AuthDto) {
+        console.log({ dto })
         return this.authService.signup();
     }
 
