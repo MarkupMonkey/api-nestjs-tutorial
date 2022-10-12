@@ -24,7 +24,7 @@ export class AuthController {
 
 
         @Body() dto: AuthDto) {
-        console.log({ dto })
+        // console.log({ dto })
         return this.authService.signup(dto);
     }
 
@@ -32,6 +32,10 @@ export class AuthController {
     @Post('signin')
     signin(
         @Body() dto: AuthDto) {
+        //appendiamo oggetto user
+        //che altro non è che il nosrto payload {sub, email, expirationDate, ecc} all'oggetto richiesta
+        //così da poterlo usare nel percorso
+
         //chiamiamo la funzione dal servizio
         return this.authService.signin(dto)
     }
