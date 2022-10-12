@@ -1,15 +1,18 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express'
+import { Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
+
+// vogliamo bloccare questo percorso se non hai il gettone valido
+// tutto quello che è in user.controller richiede di fornire un token
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {//  http://localhost:3333/users/me
-
-  // vogliamo bloccare questo percorso se non hai il gettone valido
-  @UseGuards(JwtGuard)
   @Get('me')
-  getMe(@Req() req: Request) { // oggetto @Req viene da nest e l'interfaccia Req da Express
+  getMe(@GetUser() user: User) { // vogliamo passare solo l'id dell'oggetto user
     // console.log({ user: req.user, })
-    return req.user;
+    return user;
   }
+  @Patch()
+  editUser() { }
 }
