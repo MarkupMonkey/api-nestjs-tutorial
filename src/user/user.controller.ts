@@ -1,7 +1,7 @@
 import { Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { GetUser } from 'src/auth/decorator';
-import { JwtGuard } from 'src/auth/guard';
+import { GetUser } from '../auth/decorator';
+import { JwtGuard } from '../auth/guard';
 
 // vogliamo bloccare questo percorso se non hai il gettone valido
 // tutto quello che è in user.controller richiede di fornire un token
