@@ -2,8 +2,9 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing'
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
-import * as pactume from 'pactum';
+import * as pactum from 'pactum';
 import { AuthDto } from 'src/auth/dto/auth.dto';
+import { EditUserDto } from 'src/user/dto/edit-user.dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -23,7 +24,7 @@ describe('App e2e', () => {
 
     prisma = app.get(PrismaService);
     await prisma.cleanDb();
-    pactume.request.setBaseUrl('http://localhost:3333')
+    pactum.request.setBaseUrl('http://localhost:3333')
   });
 
   afterAll(() => {
@@ -37,7 +38,7 @@ describe('App e2e', () => {
     };
     describe('Signup', () => {
       it('should throw if email empty', () => {
-        return pactume
+        return pactum
           .spec()
           .post(
             '/auth/signup'
@@ -47,7 +48,7 @@ describe('App e2e', () => {
           .expectStatus(400)
       })
       it('should throw if password empty', () => {
-        return pactume
+        return pactum
           .spec()
           .post(
             '/auth/signup'
@@ -57,13 +58,13 @@ describe('App e2e', () => {
           .expectStatus(400)
       });
       it('should throw if no body provided', () => {
-        return pactume
+        return pactum
           .spec()
           .post('/auth/signup')
           .expectStatus(400)
       });
       it('should signup', () => {
-        return pactume
+        return pactum
           .spec()
           .post(
             '/auth/signup'
@@ -73,7 +74,7 @@ describe('App e2e', () => {
     });
     describe('Signin', () => {
       it('should throw if email empty', () => {
-        return pactume
+        return pactum
           .spec()
           .post(
             '/auth/signin'
@@ -83,7 +84,7 @@ describe('App e2e', () => {
           .expectStatus(400)
       })
       it('should throw if password empty', () => {
-        return pactume
+        return pactum
           .spec()
           .post(
             '/auth/signin'
@@ -93,31 +94,59 @@ describe('App e2e', () => {
           .expectStatus(400)
       });
       it('should throw if no body provided', () => {
-        return pactume
+        return pactum
           .spec()
           .post('/auth/signin')
           .expectStatus(400)
       });
       it('should signin', () => {
-        return pactume
+        return pactum
           .spec()
           .post(
             '/auth/signin'
           ).withBody(dto)
           .expectStatus(200)
+          .stores('userAt', 'access_token')
       })
 
     });
   });
   describe('User', () => {
-    describe('Get me', () => { });
-    describe('Edit user', () => { });
+    describe('Get me', () => {
+      it('should get current user', () => {
+        return pactum
+          .spec()
+          .get('/users/me')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+      })
+    });
+    describe('Edit user', () => {
+      it('should edit user', () => {
+        const dto: EditUserDto = {
+          firstName: "Marco Salvo Simone",
+          email: 'marco.monkey93@gmail.com'
+        }
+        return pactum
+          .spec()
+          .patch('/users')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.firstName)
+          .expectBodyContains(dto.email)
+      })
+    });
   });
   describe('Bookmarks', () => {
     describe('Create bookmark', () => { })
     describe('Get bookmark', () => { })
     describe('Get bookmark by id', () => { })
-    describe('Edit bookmark', () => { })
-    describe('Delete bookmark', () => { })
+    describe('Edit bookmark by id', () => { })
+    describe('Delete bookmark by id', () => { })
   });
 })
