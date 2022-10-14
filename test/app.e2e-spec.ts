@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum';
 import { AuthDto } from 'src/auth/dto/auth.dto';
 import { EditUserDto } from 'src/user/dto/edit-user.dto';
+import { CreateBookmarkDto, EditBookmarkDto } from 'src/bookmark/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -72,6 +73,7 @@ describe('App e2e', () => {
           .expectStatus(201)
       })
     });
+
     describe('Signin', () => {
       it('should throw if email empty', () => {
         return pactum
@@ -111,6 +113,7 @@ describe('App e2e', () => {
 
     });
   });
+
   describe('User', () => {
     describe('Get me', () => {
       it('should get current user', () => {
@@ -123,6 +126,7 @@ describe('App e2e', () => {
           .expectStatus(200)
       })
     });
+
     describe('Edit user', () => {
       it('should edit user', () => {
         const dto: EditUserDto = {
@@ -142,11 +146,107 @@ describe('App e2e', () => {
       })
     });
   });
+
   describe('Bookmarks', () => {
-    describe('Create bookmark', () => { })
-    describe('Get bookmark', () => { })
-    describe('Get bookmark by id', () => { })
-    describe('Edit bookmark by id', () => { })
-    describe('Delete bookmark by id', () => { })
+    describe('get empty bookmark', () => {
+      it('should get bookmarks', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+
+          .expectStatus(200)
+          .expectBody([])
+      })
+    })
+
+    describe('Create bookmark', () => {
+      const dto: CreateBookmarkDto = {
+        title: 'First bookmark',
+        link: 'https://www.youtube.com/watch?v=D0bACr_bPM4'
+      }
+      it('should create bookmark', () => {
+        return pactum
+          .spec()
+          .post('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(201)
+          .stores('bookmarkId', 'id')
+      })
+    })
+    describe('Get bookmarks', () => {
+      it('should get bookmarks', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+
+          .expectStatus(200)
+          .expectJsonLength(1)
+      })
+    })
+    describe('Get bookmark by id', () => {
+      it('should get bookmark by id', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBodyContains('$S{bookmarkId}')
+      })
+    })
+    describe('Edit bookmark by id', () => {
+      const dto: EditBookmarkDto = {
+        title: 'Salmo Unplugged (Amazon Original)',
+        description: 'Marco Ledda Lebonski 360 Produzione: Lucia Pantalone Line Producer: Fulvio Bufardeci Ingegnere FOH: Simone Squillario Stage Manager/Tech: Alessandro Scalamonti Crew Audio: Filippo Biondi Crew Audio: Davide Linzi Drum Tech: Andrea Rastelli Mix & Master: Andrea Suriani Runners: Alessio Tanti , Fabio Abeltino Supervisore VFX: Alessandro Fele 3D e Animazione: Andrea Bacciu Compositore: Alessandro Sanna, Alessandro Congiu Servizio: Camera Service Factory Località: Ritual Club, Baja Sardinia SS Realizzato con il supporto della Fondazione Sardegna Film Commission - Fondo Location Scouting. Un particolare ringraziamento a: Ritual Club, Grand Hotel President Olbia, La Sosta, Only Sardinia Autonoleggio, Centro Musica Olbia, Camera Service Factory, Voltura, Warriors Fulvio Bufardeci Ingegnere FOH: Simone Squillario Stage Manager/Tech: Alessandro Scalamonti Crew Audio: Filippo Biondi Crew Audio: Davide Linzi Drum Tech: Andrea Rastelli Mix & Master: Andrea Suriani Runners: Alessio Tanti, Fabio Abeltino VFX Supervisor: Alessandro Fele 3D and Animation : Andrea Bacciu Compositore: Alessandro Sanna, Alessandro Congiu Servizio: Camera Service Factory Luogo: Ritual Club, Baja Sardinia SS Realizzato con il supporto della Fondazione Sardegna Film Commission - Fondo Location Scouting. Un particolare ringraziamento a: Ritual Club, Grand Hotel President Olbia, La Sosta, Only Sardinia Autonoleggio, Centro Musica Olbia, Camera Service Factory, Voltura, Warriors Fulvio Bufardeci Ingegnere FOH: Simone Squillario Stage Manager/Tech: Alessandro Scalamonti Crew Audio: Filippo Biondi Crew Audio: Davide Linzi Drum Tech: Andrea Rastelli Mix & Master: Andrea Suriani Runners: Alessio Tanti, Fabio Abeltino VFX Supervisor: Alessandro Fele 3D and Animation : Andrea Bacciu Compositore: Alessandro Sanna, Alessandro Congiu Servizio: Camera Service Factory Luogo: Ritual Club, Baja Sardinia SS Realizzato con il supporto della Fondazione Sardegna Film Commission - Fondo Location Scouting. Un particolare ringraziamento a: Ritual Club, Grand Hotel President Olbia, La Sosta, Only Sardinia Autonoleggio, Centro Musica Olbia, Camera Service Factory, Voltura, Warriors Andrea Rastelli Mix & Master: Andrea Suriani Runners: Alessio Tanti, Fabio Abeltino VFX Supervisor: Alessandro Fele 3D and Animation: Andrea Bacciu Compositore: Alessandro Sanna, Alessandro Congiu Service: Camera Service Factory Località: Ritual Club, Baja Sardinia SS Realizzato con il supporto della Fondazione Sardegna Film Commission - Fondo Location Scouting. Un particolare ringraziamento a: Ritual Club, Grand Hotel President Olbia, La Sosta, Only Sardinia Autonoleggio, Centro Musica Olbia, Camera Service Factory, Voltura, Warriors Andrea Rastelli Mix & Master: Andrea Suriani Runners: Alessio Tanti, Fabio Abeltino VFX Supervisor: Alessandro Fele 3D and Animation: Andrea Bacciu Compositore: Alessandro Sanna, Alessandro Congiu Service: Camera Service Factory Località: Ritual Club, Baja Sardinia SS Realizzato con il supporto della Fondazione Sardegna Film Commission - Fondo Location Scouting. Un particolare ringraziamento a: Ritual Club, Grand Hotel President Olbia, La Sosta, Only Sardinia Autonoleggio, Centro Musica Olbia, Camera Service Factory, Voltura, Warriors Baja Sardinia SS Realizzato con il supporto della Fondazione Sardegna Film Commission - Fondo Location Scouting. Un particolare ringraziamento a: Ritual Club, Grand Hotel President Olbia, La Sosta, Only Sardinia Autonoleggio, Centro Musica Olbia, Camera Service Factory, Voltura, Warriors Baja Sardinia SS Realizzato con il supporto della Fondazione Sardegna Film Commission - Fondo Location Scouting. Un particolare ringraziamento a: Ritual Club, Grand Hotel President Olbia, La Sosta, Only Sardinia Autonoleggio, Centro Musica Olbia, Camera Service Factory, Voltura, Warriors',
+      }
+      it('should edit bookmark', () => {
+        return pactum
+          .spec()
+          .patch('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.title)
+          .expectBodyContains(dto.description)
+      })
+    })
+    describe('Delete bookmark by id', () => {
+      it('should delite bookmark', () => {
+        return pactum
+          .spec()
+          .delete('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(204)
+      });
+
+      it('should get empty bookmarks', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+
+          .expectStatus(200)
+          .expectJsonLength(0)
+      })
+    });
   });
 })
