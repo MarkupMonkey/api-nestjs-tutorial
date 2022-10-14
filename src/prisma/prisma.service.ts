@@ -4,14 +4,21 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()//creiamo la logia per connetterci al databse
 export class PrismaService extends PrismaClient {
-    constructor(config: ConfigService) {
-        super({
-            datasources: {
-                db: {// per ora hard codato poi lo prenderemo direttamente dal file .env
-                    url: config.get('DATABASE_URL'),
-                }
-            }
-        });
-        console.log(config.get('DATABASE_URL'))
-    }
+	constructor(config: ConfigService) {
+		super({
+			datasources: {
+				db: {// per ora hard codato poi lo prenderemo direttamente dal file .env
+					url: config.get('DATABASE_URL'),
+				}
+			}
+		});
+		console.log(config.get('DATABASE_URL'))
+	}
+	// teardown logic (logica di smontaggio) prima del test e2e
+	cleanDb() {// ci assicuriamo che sia fatto in quest' ordine
+		return this.$transaction([
+			this.bookmark.deleteMany(),
+			this.user.deleteMany()
+		])
+	}
 }
